@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { ShipmentService } from '../services/shipment';
+import { jsPDF } from 'jspdf';
+import JsBarcode from 'jsbarcode';
 
 @Component({
   selector: 'app-shipment-tracking',
@@ -19,6 +21,26 @@ import { ShipmentService } from '../services/shipment';
         <div>
           <h1 class="text-2xl font-bold text-slate-900 tracking-wider">{{ data.awbNumber }}</h1>
           <p class="text-sm text-slate-500">Shipped via {{ data.courier.name }}</p>
+          
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            
+            <span *ngIf="data.currentStatus === 'Cancelled'" class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+              Cancelled
+            </span>
+            
+            <button (click)="downloadLabel()" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              Download Label
+            </button>
+
+            <button *ngIf="data.currentStatus !== 'Cancelled' && data.currentStatus !== 'Delivered'" 
+                    (click)="cancelShipment()" 
+                    [disabled]="isCancelling()"
+                    class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors flex items-center gap-2 disabled:opacity-50">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              {{ isCancelling() ? 'Cancelling...' : 'Cancel Shipment' }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -113,6 +135,7 @@ export class ShipmentTrackingComponent implements OnInit {
 
   shipment = signal<any>(null);
   isLoading = signal(true);
+  isCancelling = signal(false);
 
   // Google Maps Config
   mapCenter: google.maps.LatLngLiteral = { lat: 20.5937, lng: 78.9629 }; // India default
@@ -170,4 +193,104 @@ export class ShipmentTrackingComponent implements OnInit {
       }
     }
   }
+
+  cancelShipment() {
+    if (confirm('Are you sure you want to cancel this shipment? The booking amount will be refunded to your wallet.')) {
+      this.isCancelling.set(true);
+      const data = this.shipment();
+      this.shipmentService.cancelShipment(data.shipmentId).subscribe({
+        next: () => {
+          // Refresh tracking details
+          this.shipmentService.getShipmentDetails(data.shipmentId).subscribe(res => {
+            this.shipment.set(res.shipment);
+            this.isCancelling.set(false);
+          });
+        },
+        error: (err) => {
+          alert(err.error?.error || 'Failed to cancel shipment');
+          this.isCancelling.set(false);
+        }
+      });
+    }
+  }
+
+  downloadLabel() {
+      const data = this.shipment();
+      if (!data) return;
+
+      const doc = new jsPDF({ format: 'a6', unit: 'mm' }); 
+      
+      // Header
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SOLORA LOGISTICS', 52.5, 15, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('PREPAID', 52.5, 20, { align: 'center' });
+
+      // Barcode
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, data.awbNumber, { format: 'CODE128', displayValue: false, margin: 0 });
+      const barcodeImg = canvas.toDataURL('image/png');
+      doc.addImage(barcodeImg, 'PNG', 12.5, 25, 80, 20);
+
+      // AWB Number
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`AWB: ${data.awbNumber}`, 52.5, 52, { align: 'center' });
+
+      doc.line(10, 58, 95, 58);
+
+      // 1. Seller Information
+      doc.setFontSize(10);
+      doc.text('Seller: ', 10, 65);
+      doc.setFont('helvetica', 'normal');
+      doc.text(data.senderDetails.name, 23, 65);
+      
+      const senderFullAddress = `${data.senderDetails.address}, ${data.senderDetails.city}, ${data.senderDetails.state} - ${data.senderDetails.pinCode}`;
+      const senderSplitAddress = doc.splitTextToSize(senderFullAddress, 85);
+      doc.text(senderSplitAddress, 10, 70);
+
+      let yPos = 70 + (senderSplitAddress.length * 5) + 3;
+      doc.line(10, yPos, 95, yPos);
+      yPos += 6;
+
+      // 2. Customer Information
+      doc.setFont('helvetica', 'bold');
+      doc.text('Customer: ', 10, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(data.recipientDetails.name, 28, yPos);
+      
+      yPos += 5;
+      const recipientFullAddress = `${data.recipientDetails.address}, ${data.recipientDetails.city}, ${data.recipientDetails.state} - ${data.recipientDetails.pinCode}`;
+      const recipientSplitAddress = doc.splitTextToSize(recipientFullAddress, 85);
+      doc.text(recipientSplitAddress, 10, yPos);
+
+      yPos += (recipientSplitAddress.length * 5) + 3;
+      doc.line(10, yPos, 95, yPos);
+      yPos += 6;
+
+      // 3. Product Information
+      doc.setFont('helvetica', 'bold');
+      doc.text('Product Name:', 10, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(data.packageDetails.productName || 'General Goods', 40, yPos); 
+      yPos += 6;
+      
+      doc.setFont('helvetica', 'bold');
+      doc.text('Declared Value:', 10, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Rs. ${data.packageDetails.productPrice || 0}`, 40, yPos);
+      yPos += 5;
+
+      doc.line(10, yPos, 95, yPos);
+      yPos += 6;
+
+      // 4. Declaration Footer
+      doc.setFontSize(8);
+      doc.text('Declaration: Contents of this package are being purchased for', 10, yPos);
+      doc.text('personal purpose and not for resale.', 10, yPos + 4);
+
+      doc.save(`Solora_Label_${data.awbNumber}.pdf`);
+    }
 }

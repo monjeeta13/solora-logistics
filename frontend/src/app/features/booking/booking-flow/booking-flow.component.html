@@ -1,28 +1,30 @@
 <!-- frontend/src/app/features/booking/booking-flow/booking-flow.component.html -->
 <div class="max-w-4xl mx-auto space-y-6 pb-12">
-  
+
   <!-- Header & Progress -->
   <div>
     <h1 class="text-2xl font-bold text-slate-900 mb-6">Book a Shipment</h1>
-    
+
     <div class="flex items-center justify-between mb-8 relative">
       <!-- Progress Line -->
       <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 -z-10"></div>
       <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary -z-10 transition-all duration-300"
-           [style.width]="((currentStep() - 1) / 3) * 100 + '%'"></div>
+        [style.width]="((currentStep() - 1) / 3) * 100 + '%'"></div>
 
       <!-- Step Indicators -->
       <div *ngFor="let step of [1, 2, 3, 4]; let i = index" class="flex flex-col items-center bg-slate-50 px-2">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm border-2 transition-colors"
-             [ngClass]="{
+        <div
+          class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm border-2 transition-colors"
+          [ngClass]="{
                'bg-primary border-primary text-white': currentStep() >= step,
                'bg-white border-slate-300 text-slate-400': currentStep() < step
              }">
-          <svg *ngIf="currentStep() > step" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <svg *ngIf="currentStep() > step" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
           <span *ngIf="currentStep() <= step">{{ step }}</span>
         </div>
-        <span class="text-xs mt-2 font-medium" 
-              [ngClass]="currentStep() >= step ? 'text-slate-800' : 'text-slate-400'">
+        <span class="text-xs mt-2 font-medium" [ngClass]="currentStep() >= step ? 'text-slate-800' : 'text-slate-400'">
           {{ ['Details', 'Select Courier', 'Confirm', 'Success'][i] }}
         </span>
       </div>
@@ -31,51 +33,66 @@
 
   <!-- Error Alert -->
   <div *ngIf="errorMessage()" class="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm flex items-start">
-    <svg class="w-5 h-5 text-red-500 mr-3 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    <svg class="w-5 h-5 text-red-500 mr-3 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+      </path>
+    </svg>
     <p class="text-red-700 text-sm">{{ errorMessage() }}</p>
   </div>
 
   <!-- STEP 1: Shipment Details Form -->
   <form *ngIf="currentStep() === 1" [formGroup]="bookingForm" (ngSubmit)="onStep1Submit()" class="space-y-6">
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
+
       <!-- Sender Card -->
       <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm" formGroupName="senderDetails">
         <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+          </svg>
           Pickup Details
         </h3>
-        
+
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Sender Name</label>
-            <input type="text" formControlName="name" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+            <input type="text" formControlName="name"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number (10 digits)</label>
-            <input type="text" formControlName="phone" maxlength="10" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+            <input type="text" formControlName="phone" maxlength="10"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Pickup Address</label>
-            <textarea formControlName="address" rows="2" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm"></textarea>
+            <textarea formControlName="address" rows="2"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="block text-sm font-medium text-slate-700 mb-1">PIN Code (6 digits)</label>
-              <input type="text" formControlName="pinCode" maxlength="6" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+              <input type="text" formControlName="pinCode" maxlength="6"
+                class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
               <p class="text-xs text-slate-500 mt-1">City/State fetch automatically.</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-1">City</label>
-              <input type="text" formControlName="city" class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
+              <input type="text" formControlName="city"
+                class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-1">State</label>
-              <input type="text" formControlName="state" class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
+              <input type="text" formControlName="state"
+                class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
             </div>
           </div>
         </div>
@@ -83,42 +100,53 @@
 
       <!-- Recipient Card -->
       <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative" formGroupName="recipientDetails">
-        <button type="button" (click)="copySenderToRecipient()" class="absolute top-6 right-6 text-xs text-primary hover:text-indigo-700 font-medium bg-indigo-50 px-2 py-1 rounded">
+        <button type="button" (click)="copySenderToRecipient()"
+          class="absolute top-6 right-6 text-xs text-primary hover:text-indigo-700 font-medium bg-indigo-50 px-2 py-1 rounded">
           Copy Pickup
         </button>
         <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+            </path>
+          </svg>
           Delivery Details
         </h3>
-        
+
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Recipient Name</label>
-            <input type="text" formControlName="name" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+            <input type="text" formControlName="name"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number (10 digits)</label>
-            <input type="text" formControlName="phone" maxlength="10" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+            <input type="text" formControlName="phone" maxlength="10"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Delivery Address</label>
-            <textarea formControlName="address" rows="2" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm"></textarea>
+            <textarea formControlName="address" rows="2"
+              class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="block text-sm font-medium text-slate-700 mb-1">PIN Code (6 digits)</label>
-              <input type="text" formControlName="pinCode" maxlength="6" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+              <input type="text" formControlName="pinCode" maxlength="6"
+                class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-1">City</label>
-              <input type="text" formControlName="city" class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
+              <input type="text" formControlName="city"
+                class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-1">State</label>
-              <input type="text" formControlName="state" class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
+              <input type="text" formControlName="state"
+                class="w-full rounded-md border-slate-300 bg-slate-100 shadow-sm border p-2 text-sm font-medium text-slate-600">
             </div>
           </div>
         </div>
@@ -128,33 +156,50 @@
     <!-- Package Card -->
     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm" formGroupName="packageDetails">
       <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
         Package Information
       </h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Product Name</label>
+          <input type="text" formControlName="productName"
+            class="w-full rounded-md border-slate-300 shadow-sm border p-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label>
+          <input type="number" formControlName="productPrice"
+            class="w-full rounded-md border-slate-300 shadow-sm border p-2 text-sm">
+        </div>
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Weight (kg)</label>
-          <input type="number" step="0.1" formControlName="weight" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+          <input type="number" step="0.1" formControlName="weight"
+            class="w-full rounded-md border-slate-300 shadow-sm border p-2 text-sm">
         </div>
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-slate-700 mb-1">Contents Description (e.g., Electronics, Books)</label>
-          <input type="text" formControlName="description" class="w-full rounded-md border-slate-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 border p-2 text-sm">
+        <div class="md:col-span-4">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Category / Description</label>
+          <input type="text" formControlName="description"
+            class="w-full rounded-md border-slate-300 shadow-sm border p-2 text-sm">
         </div>
       </div>
     </div>
 
     <div class="flex justify-end">
-      <button type="submit" [disabled]="bookingForm.invalid || isLoading()" 
-              class="bg-primary hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2">
+      <button type="submit" [disabled]="bookingForm.invalid || isLoading()"
+        class="bg-primary hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2">
         {{ isLoading() ? 'Fetching Quotes...' : 'Continue to Quotes' }}
-        <svg *ngIf="!isLoading()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <svg *ngIf="!isLoading()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
       </button>
     </div>
   </form>
 
   <!-- STEP 2: Courier Selection -->
   <div *ngIf="currentStep() === 2" class="space-y-6">
-    
+
     <div class="bg-indigo-50 p-4 rounded-lg flex items-center justify-between border border-indigo-100">
       <div>
         <p class="text-sm text-indigo-800 font-medium">Available Wallet Balance</p>
@@ -163,36 +208,44 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div *ngFor="let courier of couriers()" 
-           class="bg-white rounded-xl border-2 transition-all cursor-pointer overflow-hidden flex flex-col"
-           [ngClass]="walletBalance() < courier.price ? 'border-slate-200 opacity-60 cursor-not-allowed' : 'border-slate-200 hover:border-primary hover:shadow-md'"
-           (click)="walletBalance() >= courier.price ? selectCourier(courier) : null">
-        
+      <div *ngFor="let courier of couriers()"
+        class="bg-white rounded-xl border-2 transition-all cursor-pointer overflow-hidden flex flex-col"
+        [ngClass]="walletBalance() < courier.price ? 'border-slate-200 opacity-60 cursor-not-allowed' : 'border-slate-200 hover:border-primary hover:shadow-md'"
+        (click)="walletBalance() >= courier.price ? selectCourier(courier) : null">
+
         <!-- Recommended Badge -->
-        <div *ngIf="courier.id === 'standard'" class="bg-primary text-white text-xs font-bold text-center py-1 uppercase tracking-wider">
+        <div *ngIf="courier.id === 'eco'"
+          class="bg-primary text-white text-xs font-bold text-center py-1 uppercase tracking-wider">
           Recommended
         </div>
-        
+
         <div class="p-6 flex-1 flex flex-col">
           <h3 class="text-xl font-bold text-slate-900 mb-1">{{ courier.name }}</h3>
           <p class="text-sm text-slate-500 mb-6">{{ courier.description }}</p>
-          
+
           <div class="mt-auto">
             <div class="flex items-end justify-between mb-4">
               <span class="text-3xl font-black text-slate-900">₹{{ courier.price }}</span>
             </div>
-            <div class="flex items-center text-sm font-medium text-slate-700 bg-slate-50 p-3 rounded border border-slate-100">
-              <svg class="w-5 h-5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div
+              class="flex items-center text-sm font-medium text-slate-700 bg-slate-50 p-3 rounded border border-slate-100">
+              <svg class="w-5 h-5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
               {{ courier.estimatedDaysMin }} - {{ courier.estimatedDaysMax }} Business Days
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="flex justify-start">
-      <button (click)="goToStep(1)" class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      <button (click)="goToStep(1)"
+        class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
         Back to Details
       </button>
     </div>
@@ -200,29 +253,36 @@
 
   <!-- STEP 3: Confirmation -->
   <div *ngIf="currentStep() === 3" class="space-y-6">
-    
+
     <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
       <h2 class="text-xl font-bold text-slate-900 mb-6 border-b pb-4">Booking Summary</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div>
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">From</h4>
           <p class="font-medium text-slate-900">{{ bookingForm.get('senderDetails.name')?.value }}</p>
           <p class="text-slate-600 text-sm">{{ bookingForm.get('senderDetails.address')?.value }}</p>
-          <p class="text-slate-600 text-sm">{{ bookingForm.getRawValue().senderDetails.city }}, {{ bookingForm.getRawValue().senderDetails.state }} - {{ bookingForm.get('senderDetails.pinCode')?.value }}</p>
+          <p class="text-slate-600 text-sm">{{ bookingForm.getRawValue().senderDetails.city }}, {{
+            bookingForm.getRawValue().senderDetails.state }} - {{ bookingForm.get('senderDetails.pinCode')?.value }}</p>
         </div>
         <div>
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">To</h4>
           <p class="font-medium text-slate-900">{{ bookingForm.get('recipientDetails.name')?.value }}</p>
           <p class="text-slate-600 text-sm">{{ bookingForm.get('recipientDetails.address')?.value }}</p>
-          <p class="text-slate-600 text-sm">{{ bookingForm.getRawValue().recipientDetails.city }}, {{ bookingForm.getRawValue().recipientDetails.state }} - {{ bookingForm.get('recipientDetails.pinCode')?.value }}</p>
+          <p class="text-slate-600 text-sm">{{ bookingForm.getRawValue().recipientDetails.city }}, {{
+            bookingForm.getRawValue().recipientDetails.state }} - {{ bookingForm.get('recipientDetails.pinCode')?.value
+            }}</p>
         </div>
       </div>
 
-      <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div
+        class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <p class="text-sm text-slate-500">Service: <strong class="text-slate-900">{{ selectedCourier()?.name }}</strong></p>
-          <p class="text-sm text-slate-500">Package: <strong class="text-slate-900">{{ bookingForm.get('packageDetails.weight')?.value }}kg ({{ bookingForm.get('packageDetails.description')?.value }})</strong></p>
+          <p class="text-sm text-slate-500">Service: <strong class="text-slate-900">{{ selectedCourier()?.name
+              }}</strong></p>
+          <p class="text-sm text-slate-500">Package: <strong class="text-slate-900">{{
+              bookingForm.get('packageDetails.weight')?.value }}kg ({{
+              bookingForm.get('packageDetails.description')?.value }})</strong></p>
         </div>
         <div class="text-right">
           <p class="text-sm text-slate-500">Wallet Deduction</p>
@@ -232,17 +292,23 @@
     </div>
 
     <div class="flex items-center justify-between">
-      <button (click)="goToStep(2)" [disabled]="isLoading()" class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-1 disabled:opacity-50">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      <button (click)="goToStep(2)" [disabled]="isLoading()"
+        class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-1 disabled:opacity-50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
         Change Courier
       </button>
-      
-      <button (click)="confirmBooking()" [disabled]="isLoading()" 
-              class="bg-success hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2">
-        
-        <svg *ngIf="isLoading()" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+
+      <button (click)="confirmBooking()" [disabled]="isLoading()"
+        class="bg-success hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2">
+
+        <svg *ngIf="isLoading()" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+          fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
         </svg>
 
         {{ isLoading() ? 'Processing...' : 'Confirm & Deduct Wallet' }}
@@ -251,11 +317,14 @@
   </div>
 
   <!-- STEP 4: Success Screen -->
-  <div *ngIf="currentStep() === 4 && bookingResult()" class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
+  <div *ngIf="currentStep() === 4 && bookingResult()"
+    class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
     <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+      </svg>
     </div>
-    
+
     <h2 class="text-3xl font-black text-slate-900 mb-2">Booking Confirmed!</h2>
     <p class="text-slate-500 mb-8">Your shipment has been successfully scheduled.</p>
 
@@ -275,10 +344,12 @@
     </div>
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-      <a [routerLink]="['/dashboard/shipments']" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors w-full sm:w-auto">
+      <a [routerLink]="['/dashboard/shipments']"
+        class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors w-full sm:w-auto">
         Track Shipment
       </a>
-      <a routerLink="/dashboard" class="bg-slate-100 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-200 transition-colors w-full sm:w-auto">
+      <a routerLink="/dashboard"
+        class="bg-slate-100 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-200 transition-colors w-full sm:w-auto">
         Return to Dashboard
       </a>
     </div>

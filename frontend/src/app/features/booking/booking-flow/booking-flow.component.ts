@@ -21,11 +21,11 @@ export class BookingFlowComponent implements OnInit {
 
   // Wizard State: 1 = Details, 2 = Quotes, 3 = Confirmation, 4 = Success
   currentStep = signal<number>(1);
-  
+
   bookingForm!: FormGroup;
   couriers = signal<CourierQuote[]>([]);
   selectedCourier = signal<CourierQuote | null>(null);
-  
+
   walletBalance = signal<number>(0);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -61,7 +61,9 @@ export class BookingFlowComponent implements OnInit {
       }),
       packageDetails: this.fb.group({
         weight: ['', [Validators.required, Validators.min(0.1)]],
-        description: ['', Validators.required]
+        description: ['', Validators.required],
+        productName: ['', Validators.required], // NEW
+        productPrice: ['', [Validators.required, Validators.min(1)]]
       })
     });
   }
@@ -105,7 +107,7 @@ export class BookingFlowComponent implements OnInit {
       this.bookingForm.markAllAsTouched();
       return;
     }
-    
+
     this.isLoading.set(true);
     this.bookingService.getQuotes().subscribe({
       next: (res) => {
@@ -132,7 +134,7 @@ export class BookingFlowComponent implements OnInit {
 
   confirmBooking() {
     if (!this.selectedCourier() || this.isLoading()) return;
-    
+
     this.isLoading.set(true);
     this.errorMessage.set(null);
 

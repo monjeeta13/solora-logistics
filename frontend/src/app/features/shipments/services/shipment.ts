@@ -17,4 +17,8 @@ export class ShipmentService {
   getShipmentDetails(id: string): Observable<{ shipment: any }> {
     return this.http.get<{ shipment: any }>(`${environment.apiUrl}/shipments/${id}`);
   }
+
+  cancelShipment(id: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/shipments/${id}/cancel`, {});
+  }
 }

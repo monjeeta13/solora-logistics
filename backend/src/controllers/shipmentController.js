@@ -218,4 +218,53 @@ const bookShipment = async (req, res) => {
   }
 };
 
-module.exports = { getQuotes, bookShipment, getShipments, getShipmentById };
+const cancelShipment = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const shipment = await Shipment.findOne({ 
+      shipmentId: req.params.id, 
+      userId: req.user._id 
+    }).session(session);
+    
+    if (!shipment) throw new Error('Shipment not found');
+    if (shipment.currentStatus === 'Cancelled') throw new Error('Shipment is already cancelled');
+    if (shipment.currentStatus === 'Delivered') throw new Error('Cannot cancel a delivered shipment');
+
+    // 1. Update Shipment Status
+    shipment.currentStatus = 'Cancelled';
+    shipment.trackingEvents.push({
+      status: 'Cancelled',
+      description: 'Shipment cancelled by user. Amount refunded to wallet.',
+      date: new Date()
+    });
+    await shipment.save({ session });
+
+    // 2. Refund Wallet
+    const user = await User.findById(req.user._id).session(session);
+    user.walletBalance += shipment.shippingCost;
+    await user.save({ session });
+
+    // 3. Log Transaction
+    const transaction = new WalletTransaction({
+      userId: req.user._id,
+      transactionId: `TXN-${require('crypto').randomBytes(4).toString('hex').toUpperCase()}`,
+      type: 'credit',
+      amount: shipment.shippingCost,
+      description: `Refund for Cancelled AWB (${shipment.awbNumber})`,
+      balanceAfter: user.walletBalance
+    });
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+    res.status(200).json({ message: 'Shipment cancelled and refunded successfully' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { getQuotes, bookShipment, getShipments, getShipmentById, cancelShipment };

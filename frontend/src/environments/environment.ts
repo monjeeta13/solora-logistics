@@ -1,7 +1,7 @@
 // frontend/src/environments/environment.ts
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000/api',
+  production: true,
+  apiUrl: 'https://solora-backend-odsq.onrender.com/api',
   firebase: {
     apiKey: "AIzaSyCvj144GpLPuCPwuT_aHOVhCLreCIuPZo4",
     authDomain: "sustainable-ai-logistics.firebaseapp.com",
